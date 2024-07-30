@@ -5,21 +5,35 @@
 //  Created by Adam Elfsborg on 2024-07-30.
 //
 
+import SwiftData
 import SwiftUI
 
 
 struct ContentView: View {
-    @AppStorage("notes") private var notes = ""
+    @Environment(\.modelContext) var modelContext
+    @Query var students: [Student]
     var body: some View {
         NavigationStack {
-            VStack {
-                TextEditor(text: $notes)
-                TextField("Enter your notes", text: $notes, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
+            List(students) { student in
+                Text(student.name)
             }
-            .navigationTitle("Notes")
-            .padding()
+            .navigationTitle("Classroom")
+            .toolbar {
+                Button("Add student", action: addStudent)
+            }
         }
+    }
+    
+    func addStudent() {
+        let firstNames = ["Harry", "Hermione", "Ron", "Rubeus"]
+        let lastNames = ["Potter", "Granger", "Weasley", "Hagrid"]
+        
+        let randomFullName = "\(firstNames.randomElement()!) \(lastNames.randomElement()!)"
+        
+        
+        let student = Student(id: UUID(), name: randomFullName)
+        
+        modelContext.insert(student)
     }
 }
 
